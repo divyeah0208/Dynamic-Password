@@ -1,0 +1,43 @@
+asgiref==3.8.1
+click==8.1.8
+colorama==0.4.6
+Django==5.2
+face-recognition==1.3.0
+face_recognition_models==0.3.0
+numpy==1.26.4
+pillow==11.2.1
+setuptools==75.8.0
+sqlparse==0.5.3
+tzdata==2025.2
+wheel==0.45.1
+
+
+
+
+Can you show another face? 1 sec
+Ok
+
+ok
+
+Check you mail
+
+
+
+B0u5Pnmd8S335651
+
+
+This is also your new password
+
+Divya123!@# - It's old password
+
+
+
+Ok ??'ok tq
+
+any doubts? no
+
+Ok
+
+Give me the one mail like setup process and explanation completed - ok ok
+
+Thank you - If you have any doubts you can call python team number ok kk - Thank you ok tq

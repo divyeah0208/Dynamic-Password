@@ -1,0 +1,107 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Grid View</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+      padding: 40px 0;
+      background-image: url("{% static '120020-OPTVAF-325.jpg' %}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+    }
+
+    .user-card {
+      border: none;
+      border-radius: 15px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .user-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .icon-container {
+      text-align: center;
+      padding: 40px 0;
+      background: #e9ecef;
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+    }
+
+    .icon-container i {
+      font-size: 4rem;
+      color: #6c757d;
+    }
+
+    .icon-container i:hover {
+      color: #0d6efd;
+    }
+
+    .card-body {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .verify-link {
+      display: inline-block;
+      margin-top: 10px;
+      font-weight: 500;
+      color: #0d6efd;
+      text-decoration: none;
+    }
+
+    .verify-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+{% include "message.html" %}
+<div class="container">
+  <a style="margin-left: 1000px;" class="btn btn-success" href="{% url "index" %}">Add New</a>
+  <h2 class="text-center mb-5" style="color: white;">Dynamic Password Generator</h2>
+  <h4 style="color: white;">Uploaded datas</h4>
+  <div class="row g-4">
+    {% for i in data %}
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+      <div class="card user-card shadow-sm">
+        <div class="icon-container">
+          <i class="fas fa-eye-slash"></i>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">{{ i.username }}</h5>
+          <a href="{% url 'face_verification_view' i.id %}" class="verify-link">View Image  <i class="fas fa-eye"></i></a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center">
+      <p>No users available.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

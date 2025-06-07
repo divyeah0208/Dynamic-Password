@@ -1,0 +1,197 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Verification Form</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        /* Custom CSS */
+        body {
+            background-color: #f8f9fa;
+            padding: 40px 0;
+            background-image: url("{% static '120440-OQPGVD-86.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .video-container {
+            text-align: center;
+        }
+
+        .video-container video {
+            border: 2px solid #ccc;
+            border-radius: 10px;
+        }
+
+        .capture-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .capture-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .preview-container {
+            text-align: center;
+            margin-top: 20px;
+            margin-left:60px
+        }
+
+        .preview-container img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+
+        .form-control {
+            margin-bottom: 15px;
+        }
+
+
+    </style>
+</head>
+<body>
+    {% include "message.html" %}
+    <div class="container">
+        <div class="form-container">
+            <h2>Create New Data</h2>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ form.username.label }} 
+                    {{ form.username }}
+                </div>
+                <div class="mb-3">
+                    {{ form.email.label }} 
+                    {{ form.email }}
+                </div>
+                <div class="mb-3">
+                    {{ form.password1.label }} 
+                    {{ form.password1 }}
+                </div>
+                <div class="mb-3">
+                    {{ form.password2.label }} 
+                    {{ form.password2 }}
+                </div>
+                <div class="mb-3">
+                    {{ form.image.label }} 
+                    {{ form.image }}
+                </div>
+
+                <!-- Webcam preview -->
+                <div class="video-container">
+                    <h4>Live Camera</h4>
+                    <video id="video" width="420" height="340" autoplay></video>
+                </div>
+                <div class="text-center">
+                <button type="button" class="btn btn-secondary" onclick="capture()">📸 Capture Face</button>
+
+                <!-- Canvas to capture image -->
+
+                    <canvas id="canvas" width="420" height="240" style="display:none;"></canvas>
+                 </div>
+
+                <!-- Hidden field to hold base64 string -->
+                <input type="hidden" name="face_data_url" id="face_data_url" />
+
+                <!-- Image preview -->
+                <div class="preview-container">
+                    <h4>Captured Face Image</h4>
+                    <img id="face_preview" src="#" alt="Captured Image" style="display:none;" />
+                </div>
+
+                <!-- Hidden fields for lat and lang -->
+                <input type="hidden" id="lat" name="lat" />
+                <input type="hidden" id="lang" name="lang" />
+
+                <br><br>
+                <div class="text-center">
+                <button type="submit" class="btn btn-success">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        // Turn on webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(stream) {
+            document.getElementById('video').srcObject = stream;
+        })
+        .catch(function(error) {
+            console.error("Camera access error:", error);
+        });
+
+        function capture() {
+            const canvas = document.getElementById('canvas');
+            const video = document.getElementById('video');
+            const preview = document.getElementById('face_preview');
+
+            // Draw video frame to canvas
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Get base64 data from canvas
+            const dataURL = canvas.toDataURL('image/png');
+
+            // Put in hidden field
+            document.getElementById('face_data_url').value = dataURL;
+
+            // Show image preview
+            preview.src = dataURL;
+            preview.style.display = 'block';
+        }
+
+        // Get user's geolocation and fill lat and lang hidden fields
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var latitude = position.coords.latitude;
+                var longitude = position.coords.longitude;
+
+                // Fill the hidden lat and lang fields with the user's location
+                document.getElementById('lat').value = latitude;
+                document.getElementById('lang').value = longitude;
+            }, function(error) {
+                console.error("Geolocation error:", error);
+                alert("Unable to retrieve your location.");
+            });
+        } else {
+            alert("Geolocation is not supported by your browser.");
+        }
+    </script>
+</body>
+</html>

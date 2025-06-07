@@ -1,0 +1,115 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Verification for {{ user.username }}</title>
+ 
+    <script src="https://cdn.tailwindcss.com"></script>
+ 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    body {
+        background-color: #f8f9fa;
+        padding: 40px 0;
+        background-image: url("{% static '120020-OPTVAF-325.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        min-height: 100vh;
+      }
+  
+</style>
+</head>
+
+<body class="bg-gray-100">
+    {% include "message.html" %}
+    <div class="container mx-auto p-4">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-800" style="color: white;">Face Verification for <span class="text-primary">{{ user.username }}</span></h2>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+            </div>
+            <div class="col-md-4">
+                <div class="w-full max-w-md mx-auto">
+                    <div class="bg-white rounded-lg shadow-lg p-4">
+                        <div class="flex justify-center mb-4">
+                            <video id="video" class="w-full h-72 object-cover rounded-md" autoplay></video>
+                        </div>
+         
+                        <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+         
+                        <form id="face-form" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="file" name="live_image" id="live_image" hidden>
+         
+                            <input type="hidden" name="current_lat" id="current_lat">
+                            <input type="hidden" name="current_lon" id="current_lon">
+          
+                            <div class="mt-4 text-center">
+                                <button type="submit" class="btn btn-primary w-full py-2 px-6 rounded-md shadow-md">
+                                    Verify Face
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <br><br><br><br><br>
+                <img src="{% static "Scanner.gif" %}">
+            </div>
+        </div>
+
+    </div>
+ 
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <script>
+ 
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => document.getElementById('video').srcObject = stream)
+            .catch(error => console.error("Error accessing the webcam:", error));
+ 
+        document.getElementById('face-form').addEventListener('submit', function (e) {
+            e.preventDefault(); 
+
+            const canvas = document.getElementById('canvas');
+            const video = document.getElementById('video');
+ 
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+ 
+            canvas.toBlob(blob => {
+                const input = document.getElementById('live_image');
+                const dt = new DataTransfer();
+                dt.items.add(new File([blob], 'live.jpg', { type: 'image/jpeg' }));
+                input.files = dt.files;
+ 
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function (position) {
+                        const currentLat = position.coords.latitude;
+                        const currentLon = position.coords.longitude;
+ 
+                        document.getElementById('current_lat').value = currentLat;
+                        document.getElementById('current_lon').value = currentLon;
+ 
+                        e.target.submit();
+                    }, function (error) {
+                        console.error("Error getting geolocation:", error);
+                        alert("Geolocation error. Please allow location access.");
+                    });
+                } else {
+                    console.log("Geolocation is not supported by this browser.");
+                    alert("Geolocation is not supported by this browser.");
+                }
+            }, 'image/jpeg');
+        });
+    </script>
+</body>
+
+</html>
